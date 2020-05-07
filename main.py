@@ -389,9 +389,255 @@ def make_format(data):
 
     return data
 
+# 데이터 표시
+def disp_message(str_data):
+    print(str_data)
 
-def disp_message(str):
-    return
+
+# 용기 제거
+def btn_ct_click(sp):
+    if sp.is_open:
+        sp.write('CT' + rs.terminator)
+
+
+# 제로/테어
+def btn_mzt_click(sp):
+    if sp.is_open:
+        sp.write('MZT' + rs.terminator)
+
+
+# HOLD
+def btn_hold_click(sp):
+    if sp.is_open:
+        if hold:
+            sp.write('HC' + rs.terminator)
+        else:
+            sp.write('HS' + rs.terminator)
+
+
+# Gross/NET
+def btn_net_click(sp):
+    if sp.is_open:
+        if net:
+            sp.write('MG' + rs.terminator)
+        else:
+            sp.write('MN' + rs.terminator)
+
+
+# ON/OFF
+def btn_onoff_click(sp):
+    global stanby, standby_sec, disp_msg, func_mode
+
+    if sp.is_open:
+        # 닫기 루틴
+        # 닫기 전 리소스 해제 및 조건 루틴 필요
+        try:
+            # OFF시 통상모드로 종료
+            # block = False 상태로
+            # 연결 검증 과정이 생략된 상태
+            rs.block = False
+            sp.write('F206,1' + rs.terminator)
+
+            timer_1sec.Stop()
+            sp.close()
+            groupBoxPC.enabled = True
+            button2.Text = 'ON'
+            disp_timer.Stop()
+
+            # 상태 표시 라벨 초기화
+            lblUnit.Text = string.Empty;
+            lblStable_.Visible = False;
+            lblHold_.Visible = False;
+            lblZero_.Visible = False;
+            lblNet_.Visible = False;
+
+            stanby = False;
+            standby_sec = 0;
+            rs.block = False;
+            textBox1.Clear();
+            textBox1.TextAlign = HorizontalAlignment.Center;
+            textBox1.Text = "off";
+            disp_msg = '';
+
+            radioButton1.Enabled = False;
+            radioButton2.Enabled = False;
+            radioButton1.Checked = True;
+        except:
+            None
+    else:
+        func_mode = False
+
+        try:
+            ver = True
+            disp_msg = ''
+            sp.open()
+
+            standby_sec = 0
+            groupBoxPC.Enabled = False
+            button2.Text = "OFF"
+            rs.block = True
+            textBox1.Clear()
+            textBox1.TextAlign = HorizontalAlignment.Right
+            # 초기 설정 로딩 타이머 추가
+            disp_timer.Start()
+            timer_1sec.Start()
+            # ON 시 통상모드에서 시작
+            # 연결 검증 과정이 생략된 상태
+            sp.write('F206,1' + rs.terminator)
+
+            groupBoxRS.Enabled = false;
+            groupBoxBasic.Enabled = false;
+            groupBoxComp.Enabled = false;
+            groupBoxCal.Enabled = false;
+            // groupBoxInit.Enabled = false;
+            // groupBoxVer.Enabled = false;
+            groupBoxBasic2.Enabled = false;
+
+            radioButton1.Enabled = true;
+            radioButton2.Enabled = true;
+            radioButton1.Checked = true;
+
+        except:
+            MessageBox.Show("Can not Open !\r\nPlease Check Setting of Com Port !", "AD310PC", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+
+# PRINT
+def btn_print_click(sp):
+    if do_init: # 초기화 플래그
+        DialogResult ret
+        # 초기화 루틴
+        # 시리얼이벤트(주의) 에서 EER(예시) 문자를 받으면 초기화 플래그를 세워준다.
+        # block 후 표시창에 init a를 표시해준다.
+        # 이 때 초기화 물음을 진행 후 초기화 명령어를 전송한다.(INC)
+        # 시리얼이벤트(주의) 에서 INCOK를 읽으면 성공 메시지 표시 -------(예시)
+        # block 을 풀어준다
+        ret = MessageBox.Show("초기화를 진행합니다.", "초기화", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+        if ret == DialogResult.OK:
+            next = 1;
+            do_init = False;
+            mode_init_a = True;
+            sp.write("INC" + rs.terminator);
+            timer_init.Start();
+    else:
+        # 계량모드 전환
+        # 플래그 수정 필요
+        rs.block = True
+
+
+# 설정 창 표시, 숨김
+def checkbox_setting_show():
+    if checkBox1.Checked:
+        checkBox1.Text = "설정 감추기"
+        tabControl1.Visible = true
+        base.Size = new Size(757, 700)
+    else:
+        checkBox1.Text = "설정 보이기"
+        tabControl1.Visible = false
+        base.Size = new Size(757, 400)
+
+# 초당 10회씩 표시
+def disp_timer_tick():
+    if not func_mode:
+        if stanby:
+            # disp_msg = ''
+            disp_message('------')
+            # radioButton1.enabled = False
+            # radioButton2.enabled = False
+        else:
+            disp_message(disp_msg)
+            # radioButton1.enabled = True
+            # radioButton2.enabled = True
+            # if ((serialPort1.BaudRate == 19200) | | (serialPort1.BaudRate == 38400))
+            #     serialPort1.DiscardInBuffer();
+
+        # 안정마크
+        # lblStable_.Visible = stable ? true: false;
+
+        # 영점마크
+        # lblZero_.Visible = zero ? true: false;
+
+        # net마크
+        # lblNet_.Visible = net ? true: false;
+
+        # hold
+        # if hg:
+            # if cnt100ms += 1 < 4:
+            #     # lblHold_.Visible = True
+            # else :
+            #     lblHold_.Visible = False
+            #     if cnt100ms > 8:
+            #         cnt100ms = 0
+
+        # else :
+            # lblHold_.Visible = hold ? true: False
+        # if kg:
+        #     # lblUnit.Text = "kg"
+        # elif g and not kg_ready:
+        #     # lblUnit.Text = "g"
+        # elif t:
+        #     # lblUnit.Text = "t"
+
+    elif init_f:
+        disp_message(disp_msg)
+        # radioButton1.enabled = True
+        # radioButton2.enabled = True
+
+    g = False
+    kg = False
+    t = False
+    kg_ready = False
+
+
+def timer_1sec_tick(stanby):
+    global standby_sec
+
+    if not func_mode:
+        standby_sec += 1
+
+        if standby_sec >= 3:
+            stanby = True
+
+        else:
+            stanby = False
+
+    return stanby
+
+
+
+# 플래그 초기화 함수
+def init_flag(mode):
+    if mode == SERIAL:
+        rs.f = False
+        rs.read = False
+        rs.write = False
+        serial_mode = False
+        # button7.enabled = True
+    elif mode == BASIC:
+        rs.f = False
+        rs.cf = False
+        rs.read = False
+        rs.write = False
+        basic_mode = False
+        # btnLoad1.enabled = True
+    elif mode == COMP:
+        rs.f = False
+        rs.read = False
+        rs.write = False
+        comp_mode = False
+        # button10.enabled = True
+
+    elif mode == CAL:
+        rs.cf = False
+        rs.read = False
+        rs.write = False
+        do_cal_mode = False
+        # button17.enabled = True
+        # lblResult0.ForeColor = Color.Silver
+        # lblResultCalF.ForeColor = Color.Silver
+
+    next = 1
+    # modeTimer.Stop();
+
 
 
 if __name__ == '__main__':
