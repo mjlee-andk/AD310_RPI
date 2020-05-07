@@ -99,6 +99,8 @@ class flagClass:
         self.__block = new_block
 
 
+
+
 rs = flagClass()
 
 disp_msg = ''  # 표시 데이터 변수
@@ -138,7 +140,7 @@ cf_data_array = [None] * 11  # cf 펑션 정보 배열
 do_init = False  # 초기화 루틴 진입
 
 standby_sec = 0  # 스탠바이 시간체크 변수
-stanby = False  # 스탠바이 플래그
+standby = False  # 스탠바이 플래그
 
 ver = True
 
@@ -148,6 +150,8 @@ BASIC = 2
 COMP = 3
 CAL = 4
 
+timer_1sec = None
+disp_timer = None
 
 def form1_load():
     #  for문으로 포트이름 보여주기
@@ -211,9 +215,11 @@ def readThread(ser):
 
 
 def serial_port_data_received(sp):
+    global standby, standby_sec, do_init, disp_msg, init_f
+
     rx_data = ''
-    stanby = False
-    stanby_sec = 0
+    standby = False
+    standby_sec = 0
 
     if sp.is_open:
         try:
@@ -426,7 +432,7 @@ def btn_net_click(sp):
 
 # ON/OFF
 def btn_onoff_click(sp):
-    global stanby, standby_sec, disp_msg, func_mode
+    global standby, standby_sec, disp_msg, func_mode
 
     if sp.is_open:
         # 닫기 루틴
@@ -438,11 +444,11 @@ def btn_onoff_click(sp):
             rs.block = False
             sp.write('F206,1' + rs.terminator)
 
-            timer_1sec.Stop()
+            timer_1sec.cancel()
             sp.close()
             groupBoxPC.enabled = True
             button2.Text = 'ON'
-            disp_timer.Stop()
+            disp_timer.cancel()
 
             # 상태 표시 라벨 초기화
             lblUnit.Text = string.Empty;
@@ -451,7 +457,7 @@ def btn_onoff_click(sp):
             lblZero_.Visible = False;
             lblNet_.Visible = False;
 
-            stanby = False;
+            standby = False;
             standby_sec = 0;
             rs.block = False;
             textBox1.Clear();
@@ -479,8 +485,8 @@ def btn_onoff_click(sp):
             textBox1.Clear()
             textBox1.TextAlign = HorizontalAlignment.Right
             # 초기 설정 로딩 타이머 추가
-            disp_timer.Start()
-            timer_1sec.Start()
+            disp_timer.start()
+            timer_1sec.start()
             # ON 시 통상모드에서 시작
             # 연결 검증 과정이 생략된 상태
             sp.write('F206,1' + rs.terminator)
@@ -535,10 +541,14 @@ def checkbox_setting_show():
         tabControl1.Visible = false
         base.Size = new Size(757, 400)
 
+
 # 초당 10회씩 표시
 def disp_timer_tick():
+    global g, kg, t, kg_ready, disp_timer
+    disp_timer = threading.Timer(0.3, disp_timer_tick)
+
     if not func_mode:
-        if stanby:
+        if standby:
             # disp_msg = ''
             disp_message('------')
             # radioButton1.enabled = False
@@ -587,22 +597,112 @@ def disp_timer_tick():
     t = False
     kg_ready = False
 
+    disp_timer.start()
 
-def timer_1sec_tick(stanby):
-    global standby_sec
+# 통상 모드
+def radio_btn_stream_mode(sp):
+    global standby_sec, func_mode, disp_msg
+    if sp.is_open:
+        standby_sec = 0
+        func_mode = False
+        disp_msg = ''
+        textBox1.TextAlign = HorizontalAlignment.Right;
+        sp.write('F206,1' + rs.terminator)
+        Thread.Sleep(300);
+        sp.write('F206,1' + rs.terminator)
+        Thread.Sleep(300);
+
+        # 버튼 활성화
+        button7.Enabled = false;
+        button20.Enabled = false;
+        btnLoad1.Enabled = false;
+        button21.Enabled = false;
+        button10.Enabled = false;
+        button22.Enabled = false;
+        button17.Enabled = false;
+
+        # 그룹 박스 설정 금지 상태
+        groupBoxRS.Enabled = false;
+        groupBoxBasic.Enabled = false;
+        groupBoxBasic2.Enabled = false;
+        groupBoxComp.Enabled = false;
+        groupBoxCal.Enabled = false;
+        groupBoxInit.Enabled = false;
+        groupBoxInit2.Enabled = false;
+        # groupBoxVer.Enabled = false;
+
+        rs.block = True
+
+
+# 설정 모드
+def radio_btn_command_mode(sp):
+    global func_mode, next
+    if sp.is_open:
+        func_mode = True
+        rs.block = False
+        sp.write('F206,2' + rs.terminator)
+        Thread.Sleep(300);
+        # serialPort1.DiscardInBuffer();
+        sp.write('F206,2' + rs.terminator)
+        Thread.Sleep(300);
+        next = 1
+
+        # 불러오기 버튼 활성화
+        button7.Enabled = true;
+        btnLoad1.Enabled = true;
+        button10.Enabled = true;
+        button17.Enabled = true;
+
+        # 적용버튼은 불러오기 후 활성화
+        button20.Enabled = false;
+        button21.Enabled = false;
+        button22.Enabled = false;
+
+        # 상태 표시 라벨 초기화
+        lblUnit.Text = string.Empty;
+        lblStable_.Visible = false;
+        lblHold_.Visible = false;
+        lblZero_.Visible = false;
+        lblNet_.Visible = false;
+
+        # 그룹 박스 활성화 상태
+        groupBoxInit.Enabled = true;
+        groupBoxInit2.Enabled = true;
+
+        textBox1.TextAlign = HorizontalAlignment.Center;
+        textBox1.Text = "5et";
+
+
+def timer_1sec_tick():
+    global standby_sec, standby, timer_1sec
+
+    timer_1sec = threading.Timer(1, timer_1sec_tick)
 
     if not func_mode:
         standby_sec += 1
 
         if standby_sec >= 3:
-            stanby = True
+            standby = True
 
         else:
-            stanby = False
+            standby = False
 
-    return stanby
+    timer_1sec.start()
 
 
+
+
+# 정보창
+# 이벤트 조건 : 설정모드 상태에서 정보탭을 클릭
+def tab_ver_click(sp):
+    global ver, ver_mode
+    if sp.is_open:
+        if ver and radio_btn_command.Checked:
+            ver = False
+            mode_timer.Stop()
+            rs.block = True
+            ver_mode = True
+            mode_timer.Start()
 
 # 플래그 초기화 함수
 def init_flag(mode):
@@ -641,6 +741,9 @@ def init_flag(mode):
 
 
 if __name__ == '__main__':
+    timer_1sec_tick()
+    disp_timer_tick()
+
     # 종료 시그널 등록
     signal.signal(signal.SIGINT, handler)
 
