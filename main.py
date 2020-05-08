@@ -1,9 +1,7 @@
 import serial
 import serial.tools.list_ports as list_ports
 import signal
-import time
 import threading
-
 
 class flagClass:
     def __init__(self):
@@ -24,7 +22,7 @@ class flagClass:
 
     @f.setter
     def f(self, new_f):
-        pass
+        self.__f = new_f
 
     @property
     def cf(self):
@@ -97,9 +95,6 @@ class flagClass:
     @block.setter
     def block(self, new_block):
         self.__block = new_block
-
-
-
 
 rs = flagClass()
 
@@ -523,7 +518,7 @@ def btn_print_click(sp):
             do_init = False;
             mode_init_a = True;
             sp.write("INC" + rs.terminator);
-            timer_init.Start();
+            timer_init.start();
     else:
         # 계량모드 전환
         # 플래그 수정 필요
@@ -689,6 +684,55 @@ def timer_1sec_tick():
 
     timer_1sec.start()
 
+
+def timer_init_tick(sp):
+    global init_f, disp_msg, next, mode_init_f, mode_init_a
+    if mode_init_f:
+        timer_init.cancel()
+        if init_f:
+            init_f = False
+            # 통신 설정 변경 적용
+            # 텍스트 변경되면 이벤트 발생
+            sp.close()
+            # cmbBaudrate.Text = "2400";
+            # cmbDatabits.Text = "7";
+            # cmbParity.Text = "Even";
+            # cmbStopbits.Text = "1";
+            # cmbTerminator.Text = "CRLF";
+            sp.open()
+        else:
+            MessageBox.Show("응답 오류!\r\n연결 상태 확인!", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return
+
+        disp_msg = ''
+        rs.block = True
+        textBox1.TextAlign = HorizontalAlignment.Right;
+        next = 1
+        mode_init_f = False
+        radioButton1.Checked = true;
+
+    elif mode_init_a:
+        timer_init.cancel()
+        if init_f:
+            init_f = False
+            # 통신 설정 변경 적용
+            # 텍스트 변경되면 이벤트 발생
+            sp.close()
+            # cmbBaudrate.Text = "2400";
+            # cmbDatabits.Text = "7";
+            # cmbParity.Text = "Even";
+            # cmbStopbits.Text = "1";
+            # cmbTerminator.Text = "CRLF";
+            sp.open()
+        else:
+            MessageBox.Show("응답 오류!\r\n연결 상태 확인!", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return
+
+        disp_msg = ''
+        rs.block = True
+        textBox1.TextAlign = HorizontalAlignment.Right;
+        mode_init_a = False
+        radioButton1.Checked = true;
 
 
 
