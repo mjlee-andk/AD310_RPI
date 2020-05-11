@@ -55,7 +55,7 @@ class flagClass:
         self.__write = False
         self.__hi = 0
         self.__lo = 0
-        self.__terminator = ''
+        self.__terminator = 'CRLF'
         self.__block = False
 
     @property
@@ -142,5 +142,111 @@ class flagClass:
 rs = flagClass()
 
 
-def get_serial_baudrate(sp):
+
+# 메인 버튼
+def btn_click_clear_tare(sp):
+    sp.write('CT' + rs.terminator)
+
+def btn_click_zero_tare(sp):
+    sp.write('MZT' + rs.terminator)
+
+def btn_click_gross_net(sp):
+    # 순중량일 때
+    sp.write('MG' + rs.terminator)
+    # 총중량일 때
+    sp.write('MN' + rs.terminator)
+
+def btn_click_hold(sp):
+    # 홀드 on일때
+    sp.write('HC' + rs.terminator)
+    # 홀드 off일때
+    sp.write('HS' + rs.terminator)
+
+def btn_click_onoff(sp):
+    # OFF
+    # 포트 열기, 스트림 모드 날리기, 버튼 OFF 표시
+
+    # ON
+    # 포트 닫기, 스트림 모드로 종료, 버튼 ON 표시, 상태 표시 라벨 전부 초기화
+    # 표시창 OFF 표시
+
+
+# 통신 설정
+def get_baudrate(sp):
     sp.write('?F201' + rs.terminator)
+
+def get_databits(sp):
+    sp.write('?F202' + rs.terminator)
+
+def get_parity(sp):
+    sp.write('?F203' + rs.terminator)
+
+def get_stopbits(sp):
+    sp.write('?F204' + rs.terminator)
+
+def get_terminator(sp):
+    sp.write('?F205' + rs.terminator)
+
+
+# 기본 설정
+def get_digital_filter(sp):
+    sp.write('?F001' + rs.terminator)
+
+def get_hold_mode(sp):
+    sp.write('?F002' + rs.terminator)
+
+def get_average_time(sp):
+    sp.write('?F003' + rs.terminator)
+
+def get_zero_range(sp):
+    sp.write('?CF05' + rs.terminator)
+
+def get_tracking_time(sp):
+    sp.write('?CF06' + rs.terminator)
+
+def get_tracking_range(sp):
+    sp.write('?CF07' + rs.terminator)
+
+def get_power_on_zero(sp):
+    sp.write('?CF08' + rs.terminator)
+
+
+# 외부 출력
+def get_print_condition(sp):
+    sp.write('?F101' + rs.terminator)
+
+def get_comparator(sp):
+    sp.write('?F102' + rs.terminator)
+
+def get_comparator_mode(sp):
+    sp.write('?F103' + rs.terminator)
+
+def get_near_zero(sp):
+    sp.write('?F104' + rs.terminator)
+
+
+# 교정
+def get_capa(sp):
+    sp.write('?CF03' + rs.terminator)
+
+def get_div(sp):
+    sp.write('?CF02' + rs.terminator)
+
+def get_decimal_point(sp):
+    sp.write('?CF01' + rs.terminator)
+
+def get_unit(sp):
+    sp.write('?CF09' + rs.terminator)
+
+def get_span(sp):
+    sp.write('?CF04' + rs.terminator)
+
+def do_cal_0(sp):
+    sp.write('CZ' + rs.terminator)
+
+def do_cal_f(sp):
+    sp.write('CS' + rs.terminator)
+
+# 버전 확인
+def get_ver(sp):
+    sp.write('?VER' + rs.terminator)
