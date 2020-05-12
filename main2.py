@@ -1,14 +1,21 @@
 import time
 import serial
 import threading
-import constants as CONST
+
+import constants as const
+import classes as class_caller
+import commands as command
+
+from tkinter import *
+from tkinter import ttk
 
 exit_thread = False  # 쓰레드 종료용 변수
 
 
+# TODO
 # 본 쓰레드
-def serial_receive_data(sp):
-    global exit_thread
+def serial_receive_data():
+    global exit_thread, sp
 
     # 쓰레드 종료될때까지 계속 돌림
     while not exit_thread:
@@ -19,7 +26,7 @@ def serial_receive_data(sp):
         rx_data = ''
         time.sleep(1)
         try:
-            rx_data = sp.readline().decode(CONST.ENCODING_TYPE)
+            rx_data = sp.readline().decode(const.ENCODING_TYPE)
         except:
             rx_data = ''
 
@@ -32,223 +39,14 @@ def serial_receive_data(sp):
             # init f = true
             # ------ 표시
             return
-        elif fc.block:
-            fc.block = False
+        elif scale.block:
+            scale.block = False
             # 수신 데이터 헤더 파악
             read_header(rx_data)
         print(sp.is_open)
 
 
-class pc_setting_class:
-    def __init__(self):
-        self.__port = 'COM1'
-        self.__baudrate = 9600
-        self.__databits = 7
-        self.__parity = 'NONE'
-        self.__stopbits = 1
-        self.__terminator = 'CRLF'
-
-    @property
-    def port(self):
-        return self.__port
-
-    @port.setter
-    def port(self, new_port):
-        self.__port = new_port
-
-    @property
-    def baudrate(self):
-        return self.__baudrate
-
-    @baudrate.setter
-    def baudrate(self, new_baudrate):
-        self.__baudrate = new_baudrate
-
-    @property
-    def databits(self):
-        return self.__databits
-
-    @databits.setter
-    def databits(self, new_databits):
-        self.__databits = new_databits
-
-    @property
-    def parity(self):
-        return self.__parity
-
-    @parity.setter
-    def parity(self, new_parity):
-        self.__parity = new_parity
-
-    @property
-    def stopbits(self):
-        return self.__stopbits
-
-    @stopbits.setter
-    def stopbits(self, new_stopbits):
-        self.__stopbits = new_stopbits
-
-    @property
-    def terminator(self):
-        return self.__terminator
-
-    @terminator.setter
-    def terminator(self, new_terminator):
-        self.__terminator = new_terminator
-
-
-class flag_class:
-    def __init__(self):
-        self.__f = False
-        self.__cf = False
-        self.__array_index_f = 0
-        self.__array_index_cf = 0
-        self.__read = False
-        self.__write = False
-        self.__hi = 0
-        self.__lo = 0
-        self.__terminator = '\r\n'
-        self.__block = False
-
-        # 상태 표시
-        self.__is_stable = False
-        self.__is_zero = False
-        self.__is_net = False
-        self.__is_hold = False
-        self.__is_hg = False
-
-        # 단위 표시
-        self.__unit = CONST.UNIT_NONE
-
-    @property
-    def f(self):
-        return self.__f
-
-    @f.setter
-    def f(self, new_f):
-        self.__f = new_f
-
-    @property
-    def cf(self):
-        return self.__cf
-
-    @cf.setter
-    def cf(self, new_cf):
-        self.__cf = new_cf
-
-    @property
-    def array_index_f(self):
-        return self.__array_index_f
-
-    @array_index_f.setter
-    def array_index_f(self, new_array_index_f):
-        self.__array_index_f = new_array_index_f
-
-    @property
-    def array_index_cf(self):
-        return self.__array_index_cf
-
-    @array_index_cf.setter
-    def array_index_cf(self, new_array_index_cf):
-        self.__array_index_cf = new_array_index_cf
-
-    @property
-    def read(self):
-        return self.__read
-
-    @read.setter
-    def read(self, new_read):
-        self.__read = new_read
-
-    @property
-    def write(self):
-        return self.__write
-
-    @write.setter
-    def write(self, new_write):
-        self.__write = new_write
-
-    @property
-    def hi(self):
-        return self.__hi
-
-    @hi.setter
-    def hi(self, new_hi):
-        self.__hi = new_hi
-
-    @property
-    def lo(self):
-        return self.__lo
-
-    @lo.setter
-    def lo(self, new_lo):
-        self.__lo = new_lo
-
-    @property
-    def terminator(self):
-        return self.__terminator
-
-    @terminator.setter
-    def terminator(self, new_terminator):
-        self.__terminator = new_terminator
-
-    @property
-    def block(self):
-        return self.__block
-
-    @block.setter
-    def block(self, new_block):
-        self.__block = new_block
-
-    @property
-    def is_stable(self):
-        return self.__is_stable
-
-    @is_stable.setter
-    def is_stable(self, new_is_stable):
-        self.__is_stable = new_is_stable
-
-    @property
-    def is_zero(self):
-        return self.__is_zero
-
-    @is_zero.setter
-    def is_zero(self, new_is_zero):
-        self.__is_zero = new_is_zero
-
-    @property
-    def is_net(self):
-        return self.__is_net
-
-    @is_net.setter
-    def is_net(self, new_is_net):
-        self.__is_net = new_is_net
-
-    @property
-    def is_hold(self):
-        return self.__is_hold
-
-    @is_hold.setter
-    def is_hold(self, new_is_hold):
-        self.__is_hold = new_is_hold
-
-    @property
-    def is_hg(self):
-        return self.__is_hg
-
-    @is_hg.setter
-    def is_hg(self, new_is_hg):
-        self.__is_hg = new_is_hg
-
-    @property
-    def unit(self):
-        return self.__unit
-
-    @unit.setter
-    def unit(self, new_unit):
-        self.__unit = new_unit
-
-
+# TODO
 # 수신 데이터 헤더 파악
 def read_header(rx):
     header_1bit = rx[0:0]
@@ -256,76 +54,63 @@ def read_header(rx):
     header_3bit = rx[0:2]
     header_5bit = rx[0:4]
 
-    if fc.cf and \
+    if scale.cf and \
             (header_1bit == '?' or
              header_1bit == 'I' or
              header_2bit == 'CF' or
              header_2bit == 'CS'):
-        fc.cf = False
+        scale.cf = False
         # cfDataArray[rs.arrayIndexCF] = str;
-    elif fc.f and \
+    elif scale.f and \
             (header_1bit == '?' or
              header_1bit == 'I' or
              header_1bit == 'F' or
              header_3bit == 'VER' or
              header_5bit == 'STOOK' or
              header_5bit == 'SETOK'):
-        fc.f = False
+        scale.f = False
         # fDataArray[rs.arrayIndexF] = str;
     else:
         if header_2bit == 'ST':
-            '''
-            stable = true;
-            hold = false;
-            hg = false;
-            net = True if rx[3:4] == 'NT' else False
-            dispMsg = makeFormat(str);
-            '''
+            scale.is_stable = True
+            scale.is_hold = False
+            scale.is_hg = False
+            scale.is_net = True if rx[3:4] == 'NT' else False
+            scale.display_msg = make_format(rx)
         elif header_2bit == 'US':
-            '''
-            stable = false;
-            hold = false;
-            hg = false;
-            net = True if rx[3:4] == 'NT' else False
-            dispMsg = makeFormat(str);
-            '''
+            scale.is_stable = False
+            scale.is_hold = False
+            scale.is_hg = False
+            scale.is_net = True if rx[3:4] == 'NT' else False
+            scale.display_msg = make_format(rx)
         elif header_2bit == 'HD':
-            '''
-            stable = false;
-            hold = true;
-            net = false;
-            hg = false;
-            dispMsg = makeFormat(str);
-            '''
+            scale.is_stable = False
+            scale.is_hold = True
+            scale.is_hg = False
+            scale.is_net = False
+            scale.display_msg = make_format(rx)
         elif header_2bit == 'HG':
-            '''
-            stable = false;
-            hold = true;
-            net = false;
-            hg = true;
-            dispMsg = makeFormat(str);
-            '''
+            scale.is_stable = False
+            scale.is_hold = True
+            scale.is_hg = True
+            scale.is_net = False
+            scale.display_msg = make_format(rx)
         elif header_2bit == 'OL':
-            '''
-            stable = false;
-            hold = false;
-            net = false;
-            hg = false;
-            dispMsg = "   .  ";
-            '''
+            scale.is_stable = False
+            scale.is_hold = False
+            scale.is_hg = False
+            scale.is_net = False
+            scale.display_msg = '   .  '
         else:
-            '''
-            stable = false;
-            hold = false;
-            zero = false;
-            net = false;
-            hg = false;
-            str = string.Empty;
-            rs.Block = true;
-            return;
-            '''
+            scale.is_stable = False
+            scale.is_hold = False
+            scale.is_hg = False
+            scale.is_net = False
+            scale.is_zero = False
+            scale.block = True
+            rx = ''
         rx = ''
-    fc.block = True
+    scale.block = True
 
 
 # 데이터 포맷 형성
@@ -345,51 +130,28 @@ def make_format(data):
     else:
         result = str(int(value))
 
+    # TODO
     # 단위값 길이가 무조건 2인 경우 아래 로직으로 진행
     if unit[1:1] == 't':
-        fc.unit = CONST.UNIT_T
+        scale.unit = const.UNIT_T
     else:
-        fc.unit = CONST.UNIT_G
+        scale.unit = const.UNIT_G
         if unit[0:0] != '':
-            fc.unit = CONST.UNIT_KG
+            scale.unit = const.UNIT_KG
 
     # 단위값 길이가 가변적일 경우 아래 로직으로 진행
     if len(unit) == 2:
-        fc.unit = CONST.UNIT_KG
+        scale.unit = const.UNIT_KG
     else:
-        fc.unit = CONST.UNIT_G
+        scale.unit = const.UNIT_G
         if unit == 't':
-            fc.unit = CONST.UNIT_T
+            scale.unit = const.UNIT_T
 
     return result
 
 
-# 메인 버튼
-def btn_click_clear_tare(sp):
-    sp.write('CT' + fc.terminator)
-
-
-def btn_click_zero_tare(sp):
-    sp.write('MZT' + fc.terminator)
-
-
-def btn_click_gross_net(sp):
-    if fc.is_net:
-        # 순중량일 때
-        sp.write('MG' + fc.terminator)
-    else:
-        # 총중량일 때
-        sp.write('MN' + fc.terminator)
-
-
-def btn_click_hold(sp):
-    # 홀드 on일때
-    sp.write('HC' + fc.terminator)
-    # 홀드 off일때
-    sp.write('HS' + fc.terminator)
-
-
-def btn_click_onoff(sp):
+def btn_click_on_off():
+    global exit_thread, sp
     # OFF 상태
     if sp is None:
         try:
@@ -407,7 +169,8 @@ def btn_click_onoff(sp):
             thread.start()
 
             # 스트림 모드 날리기
-            set_communication_mode(sp, CONST.STREAM_MODE)
+            command.set_communication_mode(sp, const.STREAM_MODE, scale)
+            # TODO
             # 버튼 OFF 표시
         except serial.SerialException:
             print('Can not open port.')
@@ -424,7 +187,8 @@ def btn_click_onoff(sp):
             thread.start()
 
             # 스트림 모드 날리기
-            set_communication_mode(sp, CONST.STREAM_MODE)
+            command.set_communication_mode(sp, const.STREAM_MODE, scale)
+            # TODO
             # 버튼 OFF 표시
 
         except serial.SerialException:
@@ -434,205 +198,127 @@ def btn_click_onoff(sp):
 
     # ON 상태
     try:
-        global exit_thread
         exit_thread = True
         # 스트림 모드로 종료
-        set_communication_mode(sp, CONST.STREAM_MODE)
+        command.set_communication_mode(sp, const.STREAM_MODE, scale)
         # 포트 닫기
         sp.close()
+        # TODO
         # 버튼 ON 표시, 상태 표시 라벨 전부 초기화
         # 표시창 OFF 표시
     except serial.SerialException:
         print('Can not open port.')
 
 
+# TODO
 def show_message():
-    return
-    # if (!funcMode)
-    # {
-    # if (stanby)
-    # {
-    #     dispMsg = string.Empty;
-    # dispMessage("------");
-    # radioButton1.Enabled = false;
-    # radioButton2.Enabled = false;
-    # }
-    # else
-    # {
-    #     dispMessage(dispMsg);
-    # radioButton1.Enabled = true;
-    # radioButton2.Enabled = true;
-    # if ((serialPort1.BaudRate == 19200) | | (serialPort1.BaudRate == 38400))
-    # serialPort1.DiscardInBuffer();
-    # }
-    #
-    # // 안정마크
-    # lblStable_.Visible = stable ? true: false;
-    #
-    # //
-    # 영점마크
-    # lblZero_.Visible = zero ? true: false;
-    #
-    # // net마크
-    # lblNet_.Visible = net ? true: false;
-    #
-    # // hold
-    # if (hg)
-    # {
-    # if (cnt100ms + + < 4)
-    # {
-    #     lblHold_.Visible = true;
-    # }
-    # else
-    # {
-    #     lblHold_.Visible = false;
-    # if (cnt100ms > 8)
-    # {
-    # cnt100ms = 0;
-    # }
-    # }
-    # }
-    # else
-    # {
-    # lblHold_.Visible = hold ? true: false;
-    # }
-    #
-    # if (kg)
-    # lblUnit.Text = "kg";
-    # else if (g & & !kgReady)
-    # lblUnit.Text = "g";
-    # else if (t)
-    # lblUnit.Text = "t";
-    # // else
-    # // lblUnit.Text = string.Empty;
-    # }
-    # else if (initF)
-    # {
-    #     dispMessage(dispMsg);
-    # radioButton1.Enabled = true;
-    # radioButton2.Enabled = true;
-    # }
-    # g = false;
-    # kg = false;
-    # t = false;
-    # kgReady = false;
+    global sp
+    if scale.is_stream_mode:
+        # 응답 없이 3초 이상 지난 경우
+        if scale.waiting_sec >= 3:
+            scale.display_msg = '------'
+            # 스트림모드, 설정모드 선택 안되도록 설정
+            # 라디오버튼 비활성화
+        else:
+            # 스트림모드, 설정모드 선택 되도록 설정
+            # 라디오버튼 활성화
+            if psc.baudrate == 19200 or psc.baudrate == 38400:
+                sp.flushInput()
+        # 안정
+        True if scale.is_stable else False
+        # 영점
+        True if scale.is_zero else False
+        # Net
+        True if scale.is_net else False
+        # HOLD 마크
+        if scale.is_hg:
+            '''
+                if (cnt100ms++ < 4)
+                    {
+                        lblHold_.Visible = true;
+                    }
+                    else
+                    {
+                        lblHold_.Visible = false;
+                        if (cnt100ms > 8)
+                        {
+                            cnt100ms = 0;
+                        }
+                    }
+            '''
+        else:
+            True if scale.is_hold else False
+
+        if scale.unit == const.UNIT_KG:
+            # kg 글자 변경
+            return
+        elif scale.unit == const.UNIT_G:
+            # g 글자 변경
+            return
+        elif scale.unit == const.UNIT_T:
+            # t 글자 변경
+            return
+    elif scale.init_f:
+        # 스트림모드, 설정모드 선택 안되도록 설정
+        # 라디오버튼 활성화
+        return
 
 
-# 통신 모드 변경
-def set_communication_mode(sp, val):
-    command = 'F206,' + str(val) + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
+psc = class_caller.pc_setting()
+scale = class_caller.scale_flag()
+
+# 포트 열기
+sp = serial.Serial(
+    port='COM5',
+    baudrate=2400,
+    bytesize=serial.EIGHTBITS,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    xonxoff=False,
+    timeout=0)
+
+# btn_click_onoff(None)
 
 
-'''
-통신 설정
-'''
-def get_baudrate(sp):
-    command = '?F201' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
+# 화면 구성
+window = Tk()
+window.title('AD310_RPI')
+window.geometry('750x700')
+
+# entry_data_display = Entry(window, width=20, readonlybackground='white', fg='red')
+# entry_data_display.insert(0, '334')
+# entry_data_display.configure(state='readonly')
+# entry_data_display.pack()
+
+label_stable = Label(window, width=10, height=5, text='STABLE', fg='greenyellow', bg='lightslategray', relief='flat')
+label_stable.pack()
+
+label_hold = Label(window, width=10, height=5, text='HOLD', fg='red', relief='flat')
+label_hold.pack()
+
+label_zero = Label(window, width=10, height=5, text='ZERO', fg='red', relief='flat')
+label_zero.pack()
+
+label_net = Label(window, width=10, height=5, text='NET', fg='red', relief='flat')
+label_net.pack()
 
 
-def get_databits(sp):
-    command = '?F202' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
+btn_clear_tare = Button(window, width=10, height=5, text='CLEAR\nTARE', command=lambda: command.set_clear_tare(sp, scale))
+btn_clear_tare.pack()
 
-def get_parity(sp):
-    command = '?F203' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
+btn_zero_tare = Button(window, width=10, height=5, text='ZERO\nTARE', command=lambda: command.set_zero_tare(sp, scale))
+btn_zero_tare.pack()
 
-def get_stopbits(sp):
-    command = '?F204' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
+btn_gross_net = Button(window, width=10, height=5, text='GROSS\nNET', command=lambda: command.set_gross_net(sp, scale))
+btn_gross_net.pack()
 
-def get_terminator(sp):
-    command = '?F205' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
+btn_hold = Button(window, width=10, height=5, text='HOLD', command=lambda: command.set_hold(sp, scale))
+btn_hold.pack()
 
+btn_on_off = Button(window, width=10, height=5, text='ON', command=lambda: btn_click_on_off())
+btn_on_off.pack()
 
-# 기본 설정
-def get_digital_filter(sp):
-    command = '?F001' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
+btn_print = Button(window, width=10, height=5, text='PRINT')
+btn_print.pack()
 
-def get_hold_mode(sp):
-    command = '?F002' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_average_time(sp):
-    command = '?F003' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_zero_range(sp):
-    command = '?CF05' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_tracking_time(sp):
-    command = '?CF06' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_tracking_range(sp):
-    command = '?CF07' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_power_on_zero(sp):
-    command = '?CF08' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-
-# 외부 출력
-def get_print_condition(sp):
-    command = '?F101' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_comparator(sp):
-    command = '?F102' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_comparator_mode(sp):
-    command = '?F103' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_near_zero(sp):
-    command = '?F104' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-
-# 교정
-def get_capa(sp):
-    command = '?CF03' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_div(sp):
-    command = '?CF02' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_decimal_point(sp):
-    command = '?CF01' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_unit(sp):
-    command = '?CF09' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def get_span(sp):
-    command = '?CF04' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def do_cal_0(sp):
-    command = 'CZ' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-def do_cal_f(sp):
-    command = 'CS' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-# 버전 확인
-def get_ver(sp):
-    command = '?VER' + fc.terminator
-    sp.write(command.encode(CONST.ENCODING_TYPE))
-
-
-psc = pc_setting_class()
-fc = flag_class()
-
-btn_click_onoff(None)
+window.mainloop()
