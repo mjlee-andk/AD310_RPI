@@ -2,6 +2,7 @@ import constants as const
 
 
 def set_clear_tare(sp, scale):
+    print('what the')
     if sp is None or scale is None:
         return
     command = 'CT' + scale.terminator
@@ -233,3 +234,22 @@ def get_ver(sp, scale):
 
     command = '?VER' + scale.terminator
     sp.write(command.encode(const.ENCODING_TYPE))
+
+
+# F펑션 초기화
+def init_f_function(sp, scale):
+    if sp is None or scale is None:
+        return
+
+    command = 'INF' + scale.terminator
+    sp.write(command.encode(const.ENCODING_TYPE))
+
+
+# 모든 설정 초기화
+def init_a_function(sp, scale):
+    if sp is None or scale is None:
+        return
+
+    command = 'INC' + scale.terminator
+    sp.write(command.encode(const.ENCODING_TYPE))
+

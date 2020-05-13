@@ -14,6 +14,9 @@ class scale_flag:
         self.__terminator = '\r\n'  # CRLF
         self.__block = False
 
+        # 표시 데이터
+        self.__display_msg = ''
+
         # 상태 표시
         self.__is_stable = False
         self.__is_zero = False
@@ -24,16 +27,44 @@ class scale_flag:
         # 단위 표시
         self.__unit = const.UNIT_NONE
 
-        # 대기 시간
-        self.__waiting_sec = 0
-
-        # 표시 데이터
-        self.__display_msg = ''
+        # 스팬 적용
+        self.__do_span = False
 
         # 통신 모드 파악
         self.__is_stream_mode = True
 
+        # 통신 설정 모드
+        self.__is_serial_mode = False
+
+        # 기본 설정 모드
+        self.__is_basic_mode = False
+
+        # 외부 출력 모드
+        self.__is_comp_mode = False
+
+        # 교정 모드
+        self.__is_cal_mode = False
+
+        # 버전
+        self.__is_ver_mode = False
+
+        # init F 모드
+        self.__mode_init_f = False
+
+        # init All 모드
+        self.__mode_init_a = False
+
+        # init 응답 플래그
         self.__init_f = False
+
+        # 100ms 카운터
+        self.__cnt_100ms = 0
+
+        # 초기화 루틴 진입
+        self.__do_init = False
+
+        # 대기 시간
+        self.__waiting_sec = 0
 
 
 
@@ -196,6 +227,87 @@ class scale_flag:
     @init_f.setter
     def init_f(self, new_init_f):
         self.__init_f = new_init_f
+
+    @property
+    def mode_init_f(self):
+        return self.__mode_init_f
+
+    @mode_init_f.setter
+    def mode_init_f(self, new_mode_init_f):
+        self.__mode_init_f = new_mode_init_f
+
+    @property
+    def mode_init_a(self):
+        return self.__mode_init_a
+
+    @mode_init_a.setter
+    def mode_init_a(self, new_mode_init_a):
+        self.__mode_init_a = new_mode_init_a
+
+    @property
+    def do_span(self):
+        return self.__do_span
+
+    @do_span.setter
+    def do_span(self, new_do_span):
+        self.__do_span = new_do_span
+
+    @property
+    def is_serial_mode(self):
+        return self.__is_serial_mode
+
+    @is_serial_mode.setter
+    def is_serial_mode(self, new_is_serial_mode):
+        self.__is_serial_mode = new_is_serial_mode
+
+    @property
+    def is_basic_mode(self):
+        return self.__is_basic_mode
+
+    @is_basic_mode.setter
+    def is_basic_mode(self, new_is_basic_mode):
+        self.__is_basic_mode = new_is_basic_mode
+
+    @property
+    def is_comp_mode(self):
+        return self.__is_comp_mode
+
+    @is_comp_mode.setter
+    def is_comp_mode(self, new_is_comp_mode):
+        self.__is_comp_mode = new_is_comp_mode
+
+    @property
+    def is_cal_mode(self):
+        return self.__is_cal_mode
+
+    @is_cal_mode.setter
+    def is_cal_mode(self, new_is_cal_mode):
+        self.__is_cal_mode = new_is_cal_mode
+
+    @property
+    def is_ver_mode(self):
+        return self.__is_ver_mode
+
+    @is_ver_mode.setter
+    def is_ver_mode(self, new_is_ver_mode):
+        self.__is_ver_mode = new_is_ver_mode
+
+    @property
+    def cnt_100ms(self):
+        return self.__cnt_100ms
+
+    @cnt_100ms.setter
+    def cnt_100ms(self, new_cnt_100ms):
+        self.__cnt_100ms = new_cnt_100ms
+
+    @property
+    def do_init(self):
+        return self.__do_init
+
+    @do_init.setter
+    def do_init(self, new_do_init):
+        self.__do_init = new_do_init
+
 
 class pc_setting:
     def __init__(self):
