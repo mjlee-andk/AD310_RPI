@@ -14,6 +14,7 @@ exit_thread = False  # 쓰레드 종료용 변수
 display_timer = None  # 디스플레이 타이머
 waiting_timer = None  # 대기시간 타이머
 sp = None  # 시리얼포트
+received_data_thread = None
 
 psc = class_caller.pc_setting()
 scale = class_caller.scale_flag()
@@ -32,14 +33,14 @@ label_stable = Label(window, width=10, height=5, text='STABLE', fg='greenyellow'
                      relief='flat')
 label_stable.pack()
 
-label_hold = Label(window, width=10, height=5, text='HOLD', fg='greenyellow', bg='lightslategray', relief='flat')
-label_hold.pack()
-
-label_zero = Label(window, width=10, height=5, text='ZERO', fg='greenyellow', bg='lightslategray', relief='flat')
-label_zero.pack()
-
-label_net = Label(window, width=10, height=5, text='NET', fg='greenyellow', bg='lightslategray', relief='flat')
-label_net.pack()
+# label_hold = Label(window, width=10, height=5, text='HOLD', fg='greenyellow', bg='lightslategray', relief='flat')
+# label_hold.pack()
+#
+# label_zero = Label(window, width=10, height=5, text='ZERO', fg='greenyellow', bg='lightslategray', relief='flat')
+# label_zero.pack()
+#
+# label_net = Label(window, width=10, height=5, text='NET', fg='greenyellow', bg='lightslategray', relief='flat')
+# label_net.pack()
 
 btn_clear_tare = Button(window, width=10, height=5, text='CLEAR\nTARE',
                         command=lambda: command.set_clear_tare(sp, scale))
@@ -76,9 +77,24 @@ comboExample.pack()
 def test(event):
     print(comboExample.get())
 
-
 comboExample.bind("<<ComboboxSelected>>", test)
 
+
+def setInterval(interval):
+    def decorator(function):
+        def wrapper(*args, **kwargs):
+            stopped = threading.Event()
+
+            def loop(): # executed in another thread
+                while not stopped.wait(interval): # until stopped
+                    function(*args, **kwargs)
+
+            t = threading.Thread(target=loop)
+            t.daemon = True # stop if the program exits
+            t.start()
+            return stopped
+        return wrapper
+    return decorator
 
 # TODO
 # 본 쓰레드
@@ -92,10 +108,10 @@ def serial_received_data(sp):
             break
 
         rx_data = ''
-        # time.sleep(0.1)
+        time.sleep(0.1)
         try:
             rx_data = sp.readline().decode(const.ENCODING_TYPE)
-            # print('rxdata_ ' + rx_data)
+            print('rxdata_ ' + rx_data)
             scale.waiting_sec = 0
         except:
             rx_data = ''
@@ -160,7 +176,7 @@ def read_header(rx):
     header_3bit = rx[0:3]
     header_5bit = rx[0:5]
 
-    # print(rx)
+    print(rx)
     if scale.cf and \
             (header_1bit == '?' or
              header_1bit == 'I' or
@@ -227,6 +243,12 @@ def make_format(data):
     if data == '' or data is None:
         return result
 
+    # print('It is data: ' + data)
+    # print('It is data length: ' + str(len(data)))
+
+    if len(data) < 18:
+        return result
+
     # 부호 포함 계량값
     value = data[6:14]
     # 단위값
@@ -259,13 +281,10 @@ def make_format(data):
 
 
 def btn_click_on_off():
-    global exit_thread, display_timer, waiting_timer, sp
+    global exit_thread, received_data_thread, display_timer, waiting_timer, sp
 
-    thread = threading.Thread(target=serial_received_data, args=(sp,))
-    if sp is None or sp.is_open is False:
+    if sp is None:
         try:
-            exit_thread = False
-
             # 포트 열기
             sp = serial.Serial(
                 port='COM8',
@@ -275,8 +294,10 @@ def btn_click_on_off():
                 stopbits=serial.STOPBITS_ONE,
                 xonxoff=False,
                 timeout=0)
-
-            thread.start()
+            received_data_thread = threading.Thread(target=serial_received_data, args=(sp,))
+            received_data_thread.start()
+            print('init thread')
+            print(received_data_thread)
 
             scale.display_msg = ''
             scale.block = True
@@ -294,7 +315,7 @@ def btn_click_on_off():
             # textBox1.Clear();
             # textBox1.TextAlign = HorizontalAlignment.Right;
 
-            display_timer_tick(sp)
+            display_timer = display_timer_tick()
             waiting_timer_tick()
 
             # 스트림 모드 날리기
@@ -305,21 +326,67 @@ def btn_click_on_off():
             # radioButton1.Enabled = true;
             # radioButton2.Enabled = true;
             # radioButton1.Checked = true;
+            return
         except serial.SerialException:
             print('Can not open port.')
+            return
 
-    else:
+    if not sp.is_open:
+        try:
+            exit_thread = False
+
+            sp.open()
+            received_data_thread = threading.Thread(target=serial_received_data, args=(sp,))
+            received_data_thread.start()
+            print('sp is open!!')
+            print(received_data_thread)
+
+            scale.display_msg = ''
+            scale.block = True
+
+            scale.display_msg = ''
+            scale.block = True
+            scale.waiting_sec = 0
+            # TODO
+            # groupBoxPC.Enabled = false; -> PC설정 안되도록
+            # groupBoxRS.Enabled = false;
+            # groupBoxBasic.Enabled = false;
+            # groupBoxComp.Enabled = false;
+            # groupBoxCal.Enabled = false;
+            # groupBoxBasic2.Enabled = false;
+            # textBox1.Clear();
+            # textBox1.TextAlign = HorizontalAlignment.Right;
+
+            display_timer = display_timer_tick()
+            waiting_timer_tick()
+
+            # 스트림 모드 날리기
+            command.set_communication_mode(sp, const.STREAM_MODE, scale)
+            # TODO
+            # 버튼 OFF 표시
+            btn_on_off.configure(text='OFF')
+            # radioButton1.Enabled = true;
+            # radioButton2.Enabled = true;
+            # radioButton1.Checked = true;
+
+            return
+        except serial.SerialException:
+            print('Can not open port.')
+            return
+
+    if sp.is_open:
         # ON 상태
         try:
             exit_thread = True
-
-            thread.do_run = False
-            thread.join()
+            print(received_data_thread)
+            received_data_thread.do_run = False
+            received_data_thread.join()
             # 스트림 모드로 종료
             command.set_communication_mode(sp, const.STREAM_MODE, scale)
             # 디스플레이 타이머 종료
-            if display_timer is not None:
-                display_timer.cancel()
+            display_timer.set()
+            # if display_timer is not None:
+            #     display_timer.cancel()
 
             # 대기시간 타이머 종료
             if waiting_timer is not None:
@@ -337,8 +404,9 @@ def btn_click_on_off():
 
 
 # TODO
-def display_timer_tick(sp):
-    global display_timer
+@setInterval(0.1)
+def display_timer_tick():
+    global display_timer, sp
     if scale.is_stream_mode:
         # 응답 없이 3초 이상 지난 경우
         if scale.waiting_sec >= 3:
@@ -355,11 +423,11 @@ def display_timer_tick(sp):
                     sp.flushInput()
         # 안정
         if scale.is_stable:
-            # print('stable')
-            label_stable.visible = True
+            print('stable')
+            label_stable.pack()
         else:
-            # print('unstable')
-            label_stable.visible = False
+            print('unstable')
+            label_stable.pack_forget()
         # 영점
         True if scale.is_zero else False
         # Net
@@ -385,20 +453,20 @@ def display_timer_tick(sp):
 
         if scale.unit == const.UNIT_KG:
             # kg 글자 변경
-            return
+            print('kg 글자 변경')
         elif scale.unit == const.UNIT_G:
             # g 글자 변경
-            return
+            print('g 글자 변경')
         elif scale.unit == const.UNIT_T:
             # t 글자 변경
-            return
+            print('t 글자 변경')
     elif scale.init_f:
         # 스트림모드, 설정모드 선택 안되도록 설정
         # 라디오버튼 활성화
-        return
+        print('스트림모드, 설정모드 선택 안되도록 설정')
 
-    display_timer = threading.Timer(0.1, display_timer_tick, [sp])
-    display_timer.start()
+    # display_timer = threading.Timer(0.1, display_timer_tick)
+    # display_timer.start()
 
 
 def waiting_timer_tick():
