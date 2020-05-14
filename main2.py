@@ -111,7 +111,7 @@ def serial_received_data(sp):
         time.sleep(0.1)
         try:
             rx_data = sp.readline().decode(const.ENCODING_TYPE)
-            print('rxdata_ ' + rx_data)
+            # print('rxdata_ ' + rx_data)
             scale.waiting_sec = 0
         except:
             rx_data = ''
@@ -171,12 +171,17 @@ def serial_received_data(sp):
 # TODO
 # 수신 데이터 헤더 파악
 def read_header(rx):
+
+    if len(rx) < 18:
+        scale.block = True
+        return
+
     header_1bit = rx[0:1]
     header_2bit = rx[0:2]
     header_3bit = rx[0:3]
     header_5bit = rx[0:5]
 
-    print(rx)
+    # print(rx)
     if scale.cf and \
             (header_1bit == '?' or
              header_1bit == 'I' or
@@ -243,12 +248,6 @@ def make_format(data):
     if data == '' or data is None:
         return result
 
-    # print('It is data: ' + data)
-    # print('It is data length: ' + str(len(data)))
-
-    if len(data) < 18:
-        return result
-
     # 부호 포함 계량값
     value = data[6:14]
     # 단위값
@@ -261,13 +260,13 @@ def make_format(data):
         result = str(int(value))
 
     # TODO
-    # 단위값 길이가 무조건 2인 경우 아래 로직으로 진행
-    if unit[1:2] == 't':
-        scale.unit = const.UNIT_T
-    else:
-        scale.unit = const.UNIT_G
-        if unit[0:1] != '':
-            scale.unit = const.UNIT_KG
+    # # 단위값 길이가 무조건 2인 경우 아래 로직으로 진행
+    # if unit[1:2] == 't':
+    #     scale.unit = const.UNIT_T
+    # else:
+    #     scale.unit = const.UNIT_G
+    #     if unit[0:1] != '':
+    #         scale.unit = const.UNIT_KG
 
     # 단위값 길이가 가변적일 경우 아래 로직으로 진행
     if len(unit) == 2:
