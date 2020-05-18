@@ -2,7 +2,6 @@ import constants as const
 
 
 def set_clear_tare(sp, scale):
-    print('what the')
     if sp is None or scale is None:
         return
     command = 'CT' + scale.terminator

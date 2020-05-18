@@ -90,3 +90,10 @@ BASIC = 2
 COMP = 3
 CAL = 4
 
+# 버튼 사이즈
+btn_width = 8
+btn_height = 4
+
+# 라벨 사이즈
+label_width = 8
+label_height = 1

@@ -8,6 +8,8 @@ import classes as class_caller
 import commands as command
 
 from tkinter import *
+import tkinter.font as tkFont
+
 from tkinter import ttk
 
 exit_thread = False  # 쓰레드 종료용 변수
@@ -22,62 +24,81 @@ scale = class_caller.scale_flag()
 # 화면 구성
 window = Tk()
 window.title('AD310_RPI')
-window.geometry('750x700')
+window.geometry('757x323')
 
-# entry_data_display = Entry(window, width=20, readonlybackground='white', fg='red')
-# entry_data_display.insert(0, '334')
-# entry_data_display.configure(state='readonly')
-# entry_data_display.pack()
+window.configure(bg='lightslategray')
 
-label_stable = Label(window, width=10, height=5, text='STABLE', fg='greenyellow', bg='lightslategray',
-                     relief='flat')
+option_frame = Frame(window, height=50, bg='black')
+option_frame.pack(side='bottom', fill='x')
+
+label_frame = Frame(window, width=100, height=323, bg='lightslategray')
+label_frame.pack(side='left')
+
+btn_frame = Frame(window, width=150, height=107, bg='green')
+btn_frame.pack(side='right')
+
+btn_frame2 = Frame(window, width=150, height=107, bg='yellow')
+btn_frame2.pack(side='right')
+
+btn_frame3 = Frame(window, width=150, height=107, bg='red')
+btn_frame3.pack(side='right')
+
+text_frame = Frame(window, height=323, padx=10, pady=50, bg='lightslategray')
+text_frame.pack(expand='YES', fill='both')
+
+
+label_stable = Label(label_frame, width=const.label_width, height=const.label_height, text='STABLE', bg='lightslategray', fg='greenyellow')
 label_stable.pack()
 
-# label_hold = Label(window, width=10, height=5, text='HOLD', fg='greenyellow', bg='lightslategray', relief='flat')
-# label_hold.pack()
-#
-# label_zero = Label(window, width=10, height=5, text='ZERO', fg='greenyellow', bg='lightslategray', relief='flat')
-# label_zero.pack()
-#
-# label_net = Label(window, width=10, height=5, text='NET', fg='greenyellow', bg='lightslategray', relief='flat')
-# label_net.pack()
+label_hold = Label(label_frame, width=const.label_width, height=const.label_height, text='HOLD', bg='lightslategray', fg='greenyellow')
+label_hold.pack()
 
-btn_clear_tare = Button(window, width=10, height=5, text='CLEAR\nTARE',
+label_zero = Label(label_frame, width=const.label_width, height=const.label_height, text='ZERO', bg='lightslategray', fg='greenyellow')
+label_zero.pack()
+
+label_net = Label(label_frame, width=const.label_width, height=const.label_height, text='NET', bg='lightslategray', fg='greenyellow')
+label_net.pack()
+
+fontStyle = tkFont.Font(size=50)
+text = Label(text_frame, width=50, height=10, bg='white', text='OFF', font=fontStyle)
+text.pack(anchor='center')
+
+btn_clear_tare = Button(btn_frame, width=const.btn_width, height=const.btn_height, text='CLEAR\nTARE',
                         command=lambda: command.set_clear_tare(sp, scale))
-btn_clear_tare.pack()
+btn_clear_tare.pack(side='left')
 
-btn_zero_tare = Button(window, width=10, height=5, text='ZERO\nTARE',
+btn_zero_tare = Button(btn_frame, width=const.btn_width, height=const.btn_height, text='ZERO\nTARE',
                        command=lambda: command.set_zero_tare(sp, scale))
-btn_zero_tare.pack()
+btn_zero_tare.pack(side='right')
 
-btn_gross_net = Button(window, width=10, height=5, text='GROSS\nNET',
+btn_gross_net = Button(btn_frame2, width=const.btn_width, height=const.btn_height, text='GROSS\nNET',
                        command=lambda: command.set_gross_net(sp, scale))
-btn_gross_net.pack()
+btn_gross_net.pack(side='left')
 
-btn_hold = Button(window, width=10, height=5, text='HOLD',
+btn_hold = Button(btn_frame2, width=const.btn_width, height=const.btn_height, text='HOLD',
                   command=lambda: command.set_hold(sp, scale))
-btn_hold.pack()
+btn_hold.pack(side='right')
 
-btn_on_off = Button(window, width=10, height=5, text='ON',
+btn_on_off = Button(btn_frame3, width=const.btn_width, height=const.btn_height, text='ON',
                     command=lambda: btn_click_on_off())
-btn_on_off.pack()
+btn_on_off.pack(side='left')
 #
 # btn_print = Button(window, width=10, height=5, text='PRINT')
 # btn_print.pack()
-comboExample = ttk.Combobox(window,
-                            values=[
-                                "January",
-                                "February",
-                                "March",
-                                "April"])
-
-comboExample.pack()
-
-
-def test(event):
-    print(comboExample.get())
-
-comboExample.bind("<<ComboboxSelected>>", test)
+# comboExample = ttk.Combobox(window,
+#                             values=[
+#                                 "January",
+#                                 "February",
+#                                 "March",
+#                                 "April"])
+#
+# comboExample.pack()
+#
+#
+# def test(event):
+#     print(comboExample.get())
+#
+# comboExample.bind("<<ComboboxSelected>>", test)
 
 
 def setInterval(interval):
@@ -468,6 +489,7 @@ def display_timer_tick():
     # display_timer.start()
 
 
+@setInterval(1)
 def waiting_timer_tick():
     global waiting_timer
     if scale.is_stream_mode:
@@ -475,8 +497,8 @@ def waiting_timer_tick():
 
     # print('waiting_timer_tick')
     # print('waiting_sec: ' + str(scale.waiting_sec))
-    waiting_timer = threading.Timer(1, waiting_timer_tick)
-    waiting_timer.start()
+    # waiting_timer = threading.Timer(1, waiting_timer_tick)
+    # waiting_timer.start()
 
 
 def init_timer_tick(sp):
