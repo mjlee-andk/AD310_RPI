@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import time
 import serial
 import serial.tools.list_ports
@@ -28,64 +30,52 @@ window.geometry('757x323')
 
 window.configure(bg=const.color_lightslategray)
 
-# label_frame = Frame(window, width=100, height=323, bg='blue')
+# label
 label_frame = Frame(window, width=100, height=323, pady=20, bg=const.color_lightslategray)
-label_frame.pack(side='left')
+label_frame.pack(side='left', anchor='w')
 
-label_row_frame1 = Frame(label_frame, width=100, height=80)
+label_row_frame1 = Frame(label_frame, width=100, height=70)
 label_row_frame1.pack()
 
-label_row_frame2 = Frame(label_frame, width=100, height=80)
+label_row_frame2 = Frame(label_frame, width=100, height=70)
 label_row_frame2.pack()
 
-label_row_frame3 = Frame(label_frame, width=100, height=80)
+label_row_frame3 = Frame(label_frame, width=100, height=70)
 label_row_frame3.pack()
 
-label_row_frame4 = Frame(label_frame, width=100, height=80)
+label_row_frame4 = Frame(label_frame, width=100, height=70)
 label_row_frame4.pack()
 
-btn_frame = Frame(window, width=150, height=323, padx=10, bg=const.color_lightslategray)
-btn_frame.pack(side='right')
-
-# option_frame = Frame(window, width=100, height=50, bg='black')
-# option_frame.pack(side='bottom', expand='YES')
-
-btn_row_frame1 = Frame(btn_frame, width=150, height=107)
-btn_row_frame1.pack()
-
-btn_row_frame2 = Frame(btn_frame, width=150, height=107)
-btn_row_frame2.pack()
-
-btn_row_frame3 = Frame(btn_frame, width=150, height=107)
-btn_row_frame3.pack(anchor='w')
-
-display_frame = Frame(window, height=123, padx=10, pady=30, bg=const.color_lightslategray)
-display_frame.pack(fill='x')
-
-label_style = tkFont.Font(size=13, family='맑은 고딕', weight='bold')
+label_style = tkFont.Font(size=15, family=const.font_clear_gothic, weight='bold')
 
 label_stable = Label(label_row_frame1, width=const.label_width, height=const.label_height, text='STABLE',
-                     bg=const.color_lightslategray, fg=const.color_greenyellow, font=label_style)
+                     bg=const.color_lightslategray, fg=const.color_white, font=label_style)
 label_stable.pack()
 
 label_hold = Label(label_row_frame2, width=const.label_width, height=const.label_height, text='HOLD',
-                   bg=const.color_lightslategray, fg=const.color_greenyellow, font=label_style)
+                   bg=const.color_lightslategray, fg=const.color_white, font=label_style)
 label_hold.pack()
 
 label_zero = Label(label_row_frame3, width=const.label_width, height=const.label_height, text='ZERO',
-                   bg=const.color_lightslategray, fg=const.color_greenyellow, font=label_style)
+                   bg=const.color_lightslategray, fg=const.color_white, font=label_style)
 label_zero.pack()
 
 label_net = Label(label_row_frame4, width=const.label_width, height=const.label_height, text='NET',
-                  bg=const.color_lightslategray, fg=const.color_greenyellow, font=label_style)
+                  bg=const.color_lightslategray, fg=const.color_white, font=label_style)
 label_net.pack()
 
-display_msg_style = tkFont.Font(size=60, family='SegmentA1')
-display_msg = Label(display_frame, width=50, height=5, bg=const.color_white, text='off', font=display_msg_style)
-display_msg.pack(side='left', anchor='center')
+# button
+btn_frame = Frame(window, padx=10, bg=const.color_lightslategray)
+btn_frame.pack(side='right')
 
-scale_unit = Label(display_frame, text='kg', fg=const.color_lightslategray)
-scale_unit.pack(side='left')
+btn_row_frame1 = Frame(btn_frame, pady=5, bg=const.color_lightslategray)
+btn_row_frame1.pack()
+
+btn_row_frame2 = Frame(btn_frame, pady=5, bg=const.color_lightslategray)
+btn_row_frame2.pack()
+
+btn_row_frame3 = Frame(btn_frame, pady=5, bg=const.color_lightslategray)
+btn_row_frame3.pack()
 
 btn_clear_tare = Button(btn_row_frame1, width=const.btn_width, height=const.btn_height, text='CLEAR\nTARE',
                         command=lambda: command.set_clear_tare(sp, scale))
@@ -109,9 +99,32 @@ btn_on_off.pack(side='left')
 
 btn_print = Button(btn_row_frame3, width=const.btn_width, height=const.btn_height, text='PRINT')
 btn_print.pack(side='right')
-#
-# btn_print = Button(window, width=10, height=5, text='PRINT')
-# btn_print.pack()
+
+# logo
+logo_frame = Frame(window, padx=10, pady=10, bg=const.color_lightslategray)
+logo_frame.pack(anchor='w')
+
+and_logo = PhotoImage(file='Resources/and_logo.PNG')
+label_logo = Label(logo_frame, image=and_logo, bg=const.color_lightslategray)
+label_logo.pack(side='left')
+
+label_name_style = tkFont.Font(size=20, family=const.font_clear_gothic)
+label_name = Label(logo_frame, text='AD310-RPI', bg=const.color_lightslategray, fg=const.color_white, font=label_name_style)
+label_name.pack(side='left')
+
+# display
+display_frame = Frame(window, padx=10, pady=10, bg=const.color_lightslategray)
+display_frame.pack(anchor='w')
+
+display_msg_style = tkFont.Font(size=95, family='SegmentA1')
+display_msg = Label(display_frame, width=5, height=1, text='off', bg=const.color_white, font=display_msg_style)
+display_msg.pack(side='left')
+
+scale_unit_style = tkFont.Font(size=35, family=const.font_clear_gothic)
+scale_unit = Label(display_frame, width=2, height=1, text='kg', bg=const.color_lightslategray, font=scale_unit_style, fg=const.color_lightslategray)
+scale_unit.pack(side='bottom')
+
+
 # comboExample = ttk.Combobox(window,
 #                             values=[
 #                                 "January",
@@ -342,7 +355,8 @@ def btn_click_on_off():
         try:
             # 포트 열기
             sp = serial.Serial(
-                port='COM3',
+                port='/dev/ttyUSB0',
+                # port='COM3',
                 baudrate=2400,
                 bytesize=serial.EIGHTBITS,
                 parity=serial.PARITY_NONE,
@@ -453,8 +467,14 @@ def btn_click_on_off():
             # TODO
             # 버튼 ON 표시, 상태 표시 라벨 전부 초기화
             btn_on_off.configure(text='ON')
+            label_stable.configure(fg=const.color_white)
+            label_hold.configure(fg=const.color_white)
+            label_zero.configure(fg=const.color_white)
+            label_net.configure(fg=const.color_white)
+            scale_unit.configure(fg=const.color_lightslategray, text='kg')
+            scale.display_msg = 'off'
             # 표시창 OFF 표시
-            display_msg.configure(text='off')
+            display_msg.configure(text=scale.display_msg)
         except serial.SerialException:
             print('Can not open port.')
 
@@ -480,24 +500,18 @@ def display_timer_tick():
                     sp.flushInput()
         # 안정
         if scale.is_stable:
-            print('stable')
             label_stable.configure(fg=const.color_greenyellow)
         else:
-            print('unstable')
             label_stable.configure(fg=const.color_white)
         # 영점
         if scale.is_zero:
-            print('zero')
             label_zero.configure(fg=const.color_greenyellow)
         else:
-            print('not zero')
             label_zero.configure(fg=const.color_white)
         # Net
         if scale.is_net:
-            print('net')
             label_net.configure(fg=const.color_greenyellow)
         else:
-            print('gross')
             label_net.configure(fg=const.color_white)
 
         # HOLD 마크
@@ -524,20 +538,21 @@ def display_timer_tick():
 
         if scale.unit == const.UNIT_KG:
             # kg 글자 변경
-            print('kg 글자 변경')
+            # print('kg 글자 변경')
             scale_unit.configure(fg=const.color_white, text='kg')
         elif scale.unit == const.UNIT_G:
             # g 글자 변경
-            print('g 글자 변경')
+            # print('g 글자 변경')
             scale_unit.configure(fg=const.color_white, text='g')
         elif scale.unit == const.UNIT_T:
             # t 글자 변경
-            print('t 글자 변경')
+            # print('t 글자 변경')
             scale_unit.configure(fg=const.color_white, text='t')
     elif scale.init_f:
+        print('init_f')
         # 스트림모드, 설정모드 선택 안되도록 설정
         # 라디오버튼 활성화
-        print('스트림모드, 설정모드 선택 안되도록 설정')
+        # print('스트림모드, 설정모드 선택 안되도록 설정')
 
     # display_timer = threading.Timer(0.1, display_timer_tick)
     # display_timer.start()

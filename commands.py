@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import constants as const
 
 
@@ -7,7 +9,7 @@ def set_clear_tare(sp, scale):
     command = 'CT' + scale.terminator
     sp.write(command.encode(const.ENCODING_TYPE))
     scale.display_msg = 'clear tare'
-    print(scale.display_msg)
+    # print(scale.display_msg)
 
 
 def set_zero_tare(sp, scale):

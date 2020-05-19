@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # 인코딩
 ENCODING_TYPE = 'utf-8'
 
@@ -96,10 +98,13 @@ btn_width = 8
 btn_height = 4
 
 # 라벨 사이즈
-label_width = 8
+label_width = 7
 label_height = 1
 
 # 색깔
 color_greenyellow = 'greenyellow' # 라벨 기본 폰트 색깔
 color_white = 'white'
 color_lightslategray = 'lightslategray' # 프로그램 기본 배경색
+
+# 폰트
+font_clear_gothic = '맑은 고딕'
