@@ -26,62 +26,89 @@ window = Tk()
 window.title('AD310_RPI')
 window.geometry('757x323')
 
-window.configure(bg='lightslategray')
+window.configure(bg=const.color_lightslategray)
 
-option_frame = Frame(window, height=50, bg='black')
-option_frame.pack(side='bottom', fill='x')
-
-label_frame = Frame(window, width=100, height=323, bg='lightslategray')
+# label_frame = Frame(window, width=100, height=323, bg='blue')
+label_frame = Frame(window, width=100, height=323, pady=20, bg=const.color_lightslategray)
 label_frame.pack(side='left')
 
-btn_frame = Frame(window, width=150, height=107, bg='green')
+label_row_frame1 = Frame(label_frame, width=100, height=80)
+label_row_frame1.pack()
+
+label_row_frame2 = Frame(label_frame, width=100, height=80)
+label_row_frame2.pack()
+
+label_row_frame3 = Frame(label_frame, width=100, height=80)
+label_row_frame3.pack()
+
+label_row_frame4 = Frame(label_frame, width=100, height=80)
+label_row_frame4.pack()
+
+btn_frame = Frame(window, width=150, height=323, padx=10, bg=const.color_lightslategray)
 btn_frame.pack(side='right')
 
-btn_frame2 = Frame(window, width=150, height=107, bg='yellow')
-btn_frame2.pack(side='right')
+# option_frame = Frame(window, width=100, height=50, bg='black')
+# option_frame.pack(side='bottom', expand='YES')
 
-btn_frame3 = Frame(window, width=150, height=107, bg='red')
-btn_frame3.pack(side='right')
+btn_row_frame1 = Frame(btn_frame, width=150, height=107)
+btn_row_frame1.pack()
 
-text_frame = Frame(window, height=323, padx=10, pady=50, bg='lightslategray')
-text_frame.pack(expand='YES', fill='both')
+btn_row_frame2 = Frame(btn_frame, width=150, height=107)
+btn_row_frame2.pack()
 
+btn_row_frame3 = Frame(btn_frame, width=150, height=107)
+btn_row_frame3.pack(anchor='w')
 
-label_stable = Label(label_frame, width=const.label_width, height=const.label_height, text='STABLE', bg='lightslategray', fg='greenyellow')
+display_frame = Frame(window, height=123, padx=10, pady=30, bg=const.color_lightslategray)
+display_frame.pack(fill='x')
+
+label_style = tkFont.Font(size=13, family='맑은 고딕', weight='bold')
+
+label_stable = Label(label_row_frame1, width=const.label_width, height=const.label_height, text='STABLE',
+                     bg=const.color_lightslategray, fg=const.color_greenyellow, font=label_style)
 label_stable.pack()
 
-label_hold = Label(label_frame, width=const.label_width, height=const.label_height, text='HOLD', bg='lightslategray', fg='greenyellow')
+label_hold = Label(label_row_frame2, width=const.label_width, height=const.label_height, text='HOLD',
+                   bg=const.color_lightslategray, fg=const.color_greenyellow, font=label_style)
 label_hold.pack()
 
-label_zero = Label(label_frame, width=const.label_width, height=const.label_height, text='ZERO', bg='lightslategray', fg='greenyellow')
+label_zero = Label(label_row_frame3, width=const.label_width, height=const.label_height, text='ZERO',
+                   bg=const.color_lightslategray, fg=const.color_greenyellow, font=label_style)
 label_zero.pack()
 
-label_net = Label(label_frame, width=const.label_width, height=const.label_height, text='NET', bg='lightslategray', fg='greenyellow')
+label_net = Label(label_row_frame4, width=const.label_width, height=const.label_height, text='NET',
+                  bg=const.color_lightslategray, fg=const.color_greenyellow, font=label_style)
 label_net.pack()
 
-fontStyle = tkFont.Font(size=50)
-text = Label(text_frame, width=50, height=10, bg='white', text='OFF', font=fontStyle)
-text.pack(anchor='center')
+display_msg_style = tkFont.Font(size=60, family='SegmentA1')
+display_msg = Label(display_frame, width=50, height=5, bg=const.color_white, text='off', font=display_msg_style)
+display_msg.pack(side='left', anchor='center')
 
-btn_clear_tare = Button(btn_frame, width=const.btn_width, height=const.btn_height, text='CLEAR\nTARE',
+scale_unit = Label(display_frame, text='kg', fg=const.color_lightslategray)
+scale_unit.pack(side='left')
+
+btn_clear_tare = Button(btn_row_frame1, width=const.btn_width, height=const.btn_height, text='CLEAR\nTARE',
                         command=lambda: command.set_clear_tare(sp, scale))
 btn_clear_tare.pack(side='left')
 
-btn_zero_tare = Button(btn_frame, width=const.btn_width, height=const.btn_height, text='ZERO\nTARE',
+btn_zero_tare = Button(btn_row_frame1, width=const.btn_width, height=const.btn_height, text='ZERO\nTARE',
                        command=lambda: command.set_zero_tare(sp, scale))
 btn_zero_tare.pack(side='right')
 
-btn_gross_net = Button(btn_frame2, width=const.btn_width, height=const.btn_height, text='GROSS\nNET',
+btn_gross_net = Button(btn_row_frame2, width=const.btn_width, height=const.btn_height, text='GROSS\nNET',
                        command=lambda: command.set_gross_net(sp, scale))
 btn_gross_net.pack(side='left')
 
-btn_hold = Button(btn_frame2, width=const.btn_width, height=const.btn_height, text='HOLD',
+btn_hold = Button(btn_row_frame2, width=const.btn_width, height=const.btn_height, text='HOLD',
                   command=lambda: command.set_hold(sp, scale))
 btn_hold.pack(side='right')
 
-btn_on_off = Button(btn_frame3, width=const.btn_width, height=const.btn_height, text='ON',
+btn_on_off = Button(btn_row_frame3, width=const.btn_width, height=const.btn_height, text='ON',
                     command=lambda: btn_click_on_off())
 btn_on_off.pack(side='left')
+
+btn_print = Button(btn_row_frame3, width=const.btn_width, height=const.btn_height, text='PRINT')
+btn_print.pack(side='right')
 #
 # btn_print = Button(window, width=10, height=5, text='PRINT')
 # btn_print.pack()
@@ -280,6 +307,12 @@ def make_format(data):
     else:
         result = str(int(value))
 
+    if '0' in result[0]:
+        scale.is_zero = True
+    else:
+        scale.is_zero = False
+
+
     # TODO
     # # 단위값 길이가 무조건 2인 경우 아래 로직으로 진행
     # if unit[1:2] == 't':
@@ -288,6 +321,8 @@ def make_format(data):
     #     scale.unit = const.UNIT_G
     #     if unit[0:1] != '':
     #         scale.unit = const.UNIT_KG
+
+
 
     # 단위값 길이가 가변적일 경우 아래 로직으로 진행
     if len(unit) == 2:
@@ -307,7 +342,7 @@ def btn_click_on_off():
         try:
             # 포트 열기
             sp = serial.Serial(
-                port='COM8',
+                port='COM3',
                 baudrate=2400,
                 bytesize=serial.EIGHTBITS,
                 parity=serial.PARITY_NONE,
@@ -419,6 +454,7 @@ def btn_click_on_off():
             # 버튼 ON 표시, 상태 표시 라벨 전부 초기화
             btn_on_off.configure(text='ON')
             # 표시창 OFF 표시
+            display_msg.configure(text='off')
         except serial.SerialException:
             print('Can not open port.')
 
@@ -435,6 +471,7 @@ def display_timer_tick():
             # 스트림모드, 설정모드 선택 안되도록 설정
             # 라디오버튼 비활성화
         else:
+            display_msg.configure(text=scale.display_msg)
             # dispMessage() 함수기능필요
             # 스트림모드, 설정모드 선택 되도록 설정
             # 라디오버튼 활성화
@@ -444,14 +481,25 @@ def display_timer_tick():
         # 안정
         if scale.is_stable:
             print('stable')
-            label_stable.pack()
+            label_stable.configure(fg=const.color_greenyellow)
         else:
             print('unstable')
-            label_stable.pack_forget()
+            label_stable.configure(fg=const.color_white)
         # 영점
-        True if scale.is_zero else False
+        if scale.is_zero:
+            print('zero')
+            label_zero.configure(fg=const.color_greenyellow)
+        else:
+            print('not zero')
+            label_zero.configure(fg=const.color_white)
         # Net
-        True if scale.is_net else False
+        if scale.is_net:
+            print('net')
+            label_net.configure(fg=const.color_greenyellow)
+        else:
+            print('gross')
+            label_net.configure(fg=const.color_white)
+
         # HOLD 마크
         if scale.is_hg:
             '''
@@ -469,17 +517,23 @@ def display_timer_tick():
                     }
             '''
         else:
-            True if scale.is_hold else False
+            if scale.is_hold:
+                label_hold.configure(fg=const.color_greenyellow)
+            else:
+                label_hold.configure(fg=const.color_white)
 
         if scale.unit == const.UNIT_KG:
             # kg 글자 변경
             print('kg 글자 변경')
+            scale_unit.configure(fg=const.color_white, text='kg')
         elif scale.unit == const.UNIT_G:
             # g 글자 변경
             print('g 글자 변경')
+            scale_unit.configure(fg=const.color_white, text='g')
         elif scale.unit == const.UNIT_T:
             # t 글자 변경
             print('t 글자 변경')
+            scale_unit.configure(fg=const.color_white, text='t')
     elif scale.init_f:
         # 스트림모드, 설정모드 선택 안되도록 설정
         # 라디오버튼 활성화
