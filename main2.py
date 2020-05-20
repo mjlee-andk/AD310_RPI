@@ -26,7 +26,8 @@ scale = class_caller.scale_flag()
 # 화면 구성
 window = Tk()
 window.title('AD310_RPI')
-window.geometry('757x323')
+# window.attributes('-fullscreen', True)
+window.geometry('800x400')
 
 window.configure(bg=const.color_lightslategray)
 
